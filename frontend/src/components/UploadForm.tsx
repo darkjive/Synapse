@@ -5,14 +5,17 @@ import type { VaultScanState } from "../api/types";
 
 interface Props {
   onIngested: () => void;
+  readOnly: boolean;
 }
 
 type Tab = "vault" | "note" | "file";
 
 const POLL_INTERVAL_MS = 1000;
 
-export function UploadForm({ onIngested }: Props) {
-  const [activeTab, setActiveTab] = useState<Tab>("vault");
+export function UploadForm({ onIngested, readOnly }: Props) {
+  const [selectedTab, setActiveTab] = useState<Tab>("vault");
+  // Im Nur-Lesen-Modus bleibt nur der Vault-Import (Scan) übrig.
+  const activeTab: Tab = readOnly ? "vault" : selectedTab;
   const [noteText, setNoteText] = useState("");
   const [noteBusy, setNoteBusy] = useState(false);
   const [fileBusy, setFileBusy] = useState(false);
@@ -147,18 +150,22 @@ export function UploadForm({ onIngested }: Props) {
         >
           Vault
         </button>
-        <button
-          className={`upload-tab ${activeTab === "note" ? "active" : ""}`}
-          onClick={() => setActiveTab("note")}
-        >
-          Notiz
-        </button>
-        <button
-          className={`upload-tab ${activeTab === "file" ? "active" : ""}`}
-          onClick={() => setActiveTab("file")}
-        >
-          Datei
-        </button>
+        {!readOnly && (
+          <>
+            <button
+              className={`upload-tab ${activeTab === "note" ? "active" : ""}`}
+              onClick={() => setActiveTab("note")}
+            >
+              Notiz
+            </button>
+            <button
+              className={`upload-tab ${activeTab === "file" ? "active" : ""}`}
+              onClick={() => setActiveTab("file")}
+            >
+              Datei
+            </button>
+          </>
+        )}
       </div>
 
       {activeTab === "vault" && (

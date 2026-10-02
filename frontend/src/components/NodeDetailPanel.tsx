@@ -7,6 +7,7 @@ interface Props {
   edges: Edge[];
   onClose: () => void;
   onDelete: () => void;
+  readOnly: boolean;
   audioState: "idle" | "loading" | "playing";
   onPlayAudio: () => void;
   onStopAudio: () => void;
@@ -49,7 +50,7 @@ function formatDate(iso?: string): string {
 }
 
 export function NodeDetailPanel({
-  detail, edges, onClose, onDelete, audioState, onPlayAudio, onStopAudio,
+  detail, edges, onClose, onDelete, readOnly, audioState, onPlayAudio, onStopAudio,
 }: Props) {
   if (!detail) return null;
   const { node, neighbors } = detail;
@@ -156,15 +157,17 @@ export function NodeDetailPanel({
         )}
       </div>
 
-      <button
-        type="button"
-        className="btn-danger delete-btn"
-        onClick={() => {
-          if (window.confirm(`Node "${node.title}" wirklich löschen?`)) onDelete();
-        }}
-      >
-        Node löschen
-      </button>
+      {!readOnly && (
+        <button
+          type="button"
+          className="btn-danger delete-btn"
+          onClick={() => {
+            if (window.confirm(`Node "${node.title}" wirklich löschen?`)) onDelete();
+          }}
+        >
+          Node löschen
+        </button>
+      )}
     </aside>
   );
 }

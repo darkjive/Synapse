@@ -17,6 +17,7 @@ import {
   BoltIcon,
   ListIcon,
   KeyIcon,
+  GearIcon,
 } from "./components/icons";
 import { ApiError, apiFetch, apiFetchBlob } from "./api/client";
 import type { GraphResponse, Node, Edge, NodeDetailResponse, SearchHit, NodeType } from "./api/types";
@@ -49,6 +50,8 @@ function Dashboard() {
     const stored = localStorage.getItem(TTS_STORAGE_KEY);
     return stored === null ? true : stored === "true";
   });
+  // Sicher als Default, bis der Server den echten Wert geliefert hat.
+  const [readOnly, setReadOnly] = useState(true);
   const [audioState, setAudioState] = useState<AudioState>("idle");
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const audioObjectUrlRef = useRef<string | null>(null);
@@ -84,6 +87,28 @@ function Dashboard() {
     setRefreshKey((k) => k + 1);
     loadGraph();
   }, [loadGraph]);
+
+  useEffect(() => {
+    apiFetch<{ read_only: boolean }>("/settings")
+      .then((s) => setReadOnly(s.read_only))
+      .catch(() => {
+        // Ohne Antwort bleibt der sichere Nur-Lesen-Default.
+      });
+  }, [apiKey]);
+
+  const toggleReadOnly = useCallback(async () => {
+    try {
+      const s = await apiFetch<{ read_only: boolean }>("/settings", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ read_only: !readOnly }),
+      });
+      setReadOnly(s.read_only);
+      pushToast(s.read_only ? "Nur-Lesen-Modus aktiv" : "Bearbeiten freigeschaltet", "success");
+    } catch (err) {
+      pushError(err, "Einstellung konnte nicht gespeichert werden");
+    }
+  }, [readOnly, pushToast, pushError]);
 
   const handleDeleteNode = useCallback(async () => {
     if (!selectedNode) return;
@@ -227,6 +252,9 @@ function Dashboard() {
             <button className="rail-icon" onClick={() => expandTo("log-section")} title="Event-Log">
               <ListIcon size={20} />
             </button>
+            <button className="rail-icon" onClick={() => expandTo("settings-section")} title="Einstellungen">
+              <GearIcon size={20} />
+            </button>
           </div>
         ) : (
           <>
@@ -256,7 +284,7 @@ function Dashboard() {
 
             <div className="sidebar-section" id="upload-section">
               <h2>Eingabe</h2>
-              <UploadForm onIngested={triggerRefresh} />
+              <UploadForm onIngested={triggerRefresh} readOnly={readOnly} />
             </div>
 
             <div className="sidebar-section" id="search-section">
@@ -271,12 +299,32 @@ function Dashboard() {
                 onGraphChanged={triggerRefresh}
                 ttsEnabled={ttsEnabled}
                 onToggleTts={toggleTts}
+                readOnly={readOnly}
               />
             </div>
 
             <div className="sidebar-section" id="log-section">
               <h2>Event-Log</h2>
               <EventLogPanel refreshKey={refreshKey} onGraphChanged={triggerRefresh} />
+            </div>
+
+            <div className="sidebar-section" id="settings-section">
+              <h2>Einstellungen</h2>
+              <button
+                type="button"
+                className="tts-toggle"
+                role="switch"
+                aria-checked={readOnly}
+                onClick={toggleReadOnly}
+              >
+                <span>Nur-Lesen-Modus</span>
+                <span className={`switch ${readOnly ? "on" : ""}`} aria-hidden="true" />
+              </button>
+              <p className="stats-message">
+                {readOnly
+                  ? "Synapse zeigt nur den Vault an. Der Vault wird von Claude gepflegt."
+                  : "Bearbeiten ist freigeschaltet: Notizen, Dateien und Löschen sind möglich."}
+              </p>
             </div>
           </>
         )}
@@ -325,6 +373,7 @@ function Dashboard() {
         edges={edges}
         onClose={() => setSelectedNode(null)}
         onDelete={handleDeleteNode}
+        readOnly={readOnly}
         audioState={audioState}
         onPlayAudio={() => selectedNode && playNode(selectedNode.node.id)}
         onStopAudio={stopAudio}

@@ -7,6 +7,7 @@ interface Props {
   onGraphChanged: () => void;
   ttsEnabled: boolean;
   onToggleTts: () => void;
+  readOnly: boolean;
 }
 
 interface BusyState {
@@ -17,7 +18,7 @@ interface BusyState {
   backup: boolean;
 }
 
-export function StatsBar({ refreshKey, onGraphChanged, ttsEnabled, onToggleTts }: Props) {
+export function StatsBar({ refreshKey, onGraphChanged, ttsEnabled, onToggleTts, readOnly }: Props) {
   const [stats, setStats] = useState<StatsResponse | null>(null);
   const [busy, setBusy] = useState<BusyState>({
     retry: false,
@@ -102,13 +103,15 @@ export function StatsBar({ refreshKey, onGraphChanged, ttsEnabled, onToggleTts }
         >
           {busy.retry ? "…" : "Erneut verarbeiten"}
         </button>
-        <button
-          className="btn-action"
-          disabled={busy.dedupe}
-          onClick={() => runAction("dedupe", "/dedupe", "Duplikate", true)}
-        >
-          {busy.dedupe ? "…" : "Duplikate zusammenführen"}
-        </button>
+        {!readOnly && (
+          <button
+            className="btn-action"
+            disabled={busy.dedupe}
+            onClick={() => runAction("dedupe", "/dedupe", "Duplikate", true)}
+          >
+            {busy.dedupe ? "…" : "Duplikate zusammenführen"}
+          </button>
+        )}
         <button
           className="btn-action"
           disabled={busy.contradictions}
