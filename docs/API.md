@@ -76,6 +76,19 @@ Datei-Endpunkte arbeiten relativ zu `CBKS_VAULT_DIR` und sind per
 | `GET` | `/vault/backlinks?path=` | Ein- und ausgehende Wiki-Links einer Datei |
 | `GET` | `/vault/search?q=` | Volltextsuche über die indexierten Vault-Inhalte |
 
+## Einstellungen und Nur-Lesen-Modus
+
+| Methode | Pfad | Zweck |
+|---|---|---|
+| `GET` | `/settings` | Aktuellen Modus lesen: `{"read_only": true}` |
+| `PUT` | `/settings` | Modus setzen, wird in `settings.json` im Datenverzeichnis gespeichert |
+
+Im Nur-Lesen-Modus (Voreinstellung, `CBKS_READ_ONLY`) antworten `POST /documents`, `POST /notes`,
+`DELETE /nodes/{id}`, `POST /dedupe`, `PUT`/`DELETE /vault/file`, `POST /vault/rename` und
+`POST /vault/attachment` mit `403`. Lesen, Suchen, `/ask`, Scan und Rescan bleiben erlaubt. Node-IDs
+für Vault-Dateien ohne `id:` im Frontmatter werden aus dem Pfad abgeleitet (uuid5); der Scan schreibt
+nichts mehr in den Vault.
+
 ## Fehlerformat
 
 Fehler kommen im FastAPI-Standard, die Meldungen sind **deutsch**:
@@ -84,6 +97,6 @@ Fehler kommen im FastAPI-Standard, die Meldungen sind **deutsch**:
 { "detail": "Node nicht gefunden" }
 ```
 
-Gängige Codes: `401` (API-Key fehlt/falsch), `404` (nicht gefunden),
+Gängige Codes: `401` (API-Key fehlt/falsch), `403` (Nur-Lesen-Modus), `404` (nicht gefunden),
 `409` (Vault-Schreibkonflikt), `422` (kein vorlesbarer Inhalt),
 `503` (TTS nicht installiert).

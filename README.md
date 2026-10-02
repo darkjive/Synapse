@@ -168,6 +168,7 @@ funktionierenden Default, nichts muss gesetzt werden.
 | `CBKS_DATABASE_PATH` | `$CBKS_DATA_DIR/cbks.db` | Pfad der SQLite-Datenbank |
 | `CBKS_FAISS_PATH` | `$CBKS_DATA_DIR/faiss_index/index.faiss` | Pfad des Vektorindex |
 | `CBKS_API_KEY` | *(leer)* | `X-API-Key`-Header. **Leer = offene API** |
+| `CBKS_READ_ONLY` | `1` | Nur-Lesen-Modus: sperrt Schreibzugriffe auf Vault und Graph (Voreinstellung). Zur Laufzeit in der UI umschaltbar, der Wert wird in `$CBKS_DATA_DIR/settings.json` gespeichert und hat Vorrang |
 | `CBKS_VAULT_PATH` | *(leer)* | Vorbelegung des Vault-Pfads im Frontend |
 | `CBKS_VAULT_DIR` | *(leer)* | Wurzelverzeichnis für die Vault-Datei-Endpunkte |
 | `OLLAMA_HOST` | `http://127.0.0.1:11434` | Ollama-Endpunkt |
