@@ -41,7 +41,7 @@ dokumentierte Standard für den local-first Betrieb.
 ## Meldung
 
 Bitte **kein öffentliches Issue** für Sicherheitsprobleme. Nutze die
-[GitHub Security Advisories](https://github.com/darkjive/cbks/security/advisories/new)
+[GitHub Security Advisories](https://github.com/darkjive/Synapse/security/advisories/new)
 dieses Repos. Rückmeldung in der Regel innerhalb von 14 Tagen.
 
 Dies ist ein Freizeit-/Experimentprojekt ohne SLA — es gibt keinen bezahlten
