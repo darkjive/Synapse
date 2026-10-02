@@ -34,18 +34,25 @@ def iter_vault_notes(root: Path) -> list[Path]:
     return files
 
 
-def _ensure_id(path: Path, raw: str) -> tuple[str, str]:
+# Fester Namespace: dieselbe Vault-Datei ergibt immer dieselbe Node-ID, ohne dass
+# in die Datei geschrieben werden muss (der Vault wird nur gelesen).
+_ID_NAMESPACE = uuid.UUID("6f1d3c52-8e0a-4b7c-9a41-2d5e7b9c0a13")
+
+
+def _ensure_id(path: Path, root: Path, raw: str) -> tuple[str, str]:
     _, meta = parse_frontmatter(raw)
     if meta.get("id"):
         return meta["id"], raw
-    new_id = str(uuid.uuid4())
+    rel_path = path.relative_to(root).as_posix()
+    return str(uuid.uuid5(_ID_NAMESPACE, rel_path)), raw
+
+
+def pin_id(raw: str, node_id: str) -> str:
+    """Schreibt node_id ins Frontmatter (nur für den Editor-Modus, z. B. beim Umbenennen)."""
     match = _OPENING_FRONTMATTER_RE.match(raw)
     if match:
-        updated = raw[: match.end()] + f"id: {new_id}\n" + raw[match.end() :]
-    else:
-        updated = f"---\nid: {new_id}\n---\n\n{raw}"
-    path.write_text(updated, encoding="utf-8")
-    return new_id, updated
+        return raw[: match.end()] + f"id: {node_id}\n" + raw[match.end() :]
+    return f"---\nid: {node_id}\n---\n\n{raw}"
 
 
 @dataclass
@@ -58,7 +65,7 @@ class _Staged:
 
 def stage_file(path: Path, root: Path, ctx: AppContext) -> _Staged:
     raw = path.read_text(encoding="utf-8")
-    node_id, raw = _ensure_id(path, raw)
+    node_id, raw = _ensure_id(path, root, raw)
     file_hash = content_hash(raw)
     body, _ = parse_frontmatter(raw)
     rel_path = path.relative_to(root).as_posix()
@@ -123,7 +130,7 @@ async def rescan(root: Path, ctx: AppContext, full: bool = False) -> RescanSumma
         known_paths.add(rel_path)
         try:
             raw = path.read_text(encoding="utf-8")
-            node_id, raw = _ensure_id(path, raw)
+            node_id, raw = _ensure_id(path, root, raw)
             file_hash = content_hash(raw)
             existing = ctx.graph.get_node(node_id)
             if not full and existing is not None and existing.metadata.get("file_hash") == file_hash:

@@ -12,6 +12,7 @@ from fastapi import Depends, FastAPI, File, HTTPException, Query, Request, Uploa
 from fastapi.responses import FileResponse
 
 from backend.api_models import (
+    SettingsModel,
     AskRequest,
     AskResponse,
     BackupResponse,
@@ -46,7 +47,9 @@ from backend.api_models import (
     VaultTreeEntry,
 )
 from backend.app_context import AppContext, build_context
-from backend.auth import require_api_key
+from backend.auth import require_api_key, require_writable
+from backend.config import Config
+from backend.runtime_settings import is_read_only, set_read_only
 from backend.logging_setup import setup_logging
 from backend.services import analysis as analysis_service
 from backend.services import rag as rag_service
@@ -128,7 +131,18 @@ def _to_tree_response(entry: vault_fs.TreeEntry) -> VaultTreeEntry:
 _vault_scan_tasks: set[asyncio.Task] = set()
 
 
-@app.post("/documents", response_model=IngestResponse)
+@app.get("/settings", response_model=SettingsModel)
+async def get_settings() -> SettingsModel:
+    return SettingsModel(read_only=is_read_only(Config.from_env()))
+
+
+@app.put("/settings", response_model=SettingsModel)
+async def put_settings(body: SettingsModel) -> SettingsModel:
+    set_read_only(Config.from_env(), body.read_only)
+    return SettingsModel(read_only=body.read_only)
+
+
+@app.post("/documents", response_model=IngestResponse, dependencies=[Depends(require_writable)])
 async def create_document(
     file: UploadFile = File(...), ctx: AppContext = Depends(get_context)
 ) -> IngestResponse:
@@ -162,7 +176,7 @@ async def create_document(
     )
 
 
-@app.post("/notes", response_model=IngestResponse)
+@app.post("/notes", response_model=IngestResponse, dependencies=[Depends(require_writable)])
 async def create_note(body: NoteRequest, ctx: AppContext = Depends(get_context)) -> IngestResponse:
     result = ingest_note(body.text, ctx.event_log, source="api")
     if result.duplicate:
@@ -240,7 +254,7 @@ async def get_node(node_id: str, ctx: AppContext = Depends(get_context)) -> Node
     return NodeResponse(node=node, neighbors=neighbors)
 
 
-@app.delete("/nodes/{node_id}", response_model=DeleteResponse)
+@app.delete("/nodes/{node_id}", response_model=DeleteResponse, dependencies=[Depends(require_writable)])
 async def delete_node(node_id: str, ctx: AppContext = Depends(get_context)) -> DeleteResponse:
     node = ctx.graph.get_node(node_id)
     if node is None:
@@ -314,7 +328,7 @@ async def rebuild(ctx: AppContext = Depends(get_context)) -> ProcessSummaryRespo
     return ProcessSummaryResponse(processed=summary.processed, failed=summary.failed)
 
 
-@app.post("/dedupe", response_model=DedupeResponse)
+@app.post("/dedupe", response_model=DedupeResponse, dependencies=[Depends(require_writable)])
 async def dedupe(ctx: AppContext = Depends(get_context)) -> DedupeResponse:
     summary = await ctx.entity_resolver.dedupe_all()
     return DedupeResponse(checked=summary.checked, merged=summary.merged)
@@ -408,7 +422,7 @@ async def get_vault_file(
     return VaultFileResponse(path=path, content=content, content_hash=digest)
 
 
-@app.put("/vault/file", response_model=VaultFileWriteResponse)
+@app.put("/vault/file", response_model=VaultFileWriteResponse, dependencies=[Depends(require_writable)])
 async def put_vault_file(
     body: VaultFileWriteRequest, ctx: AppContext = Depends(get_context)
 ) -> VaultFileWriteResponse:
@@ -429,7 +443,7 @@ async def put_vault_file(
     return VaultFileWriteResponse(path=body.path, content_hash=digest, indexed=indexed)
 
 
-@app.post("/vault/rename", response_model=VaultFileWriteResponse)
+@app.post("/vault/rename", response_model=VaultFileWriteResponse, dependencies=[Depends(require_writable)])
 async def post_vault_rename(
     body: VaultRenameRequest, ctx: AppContext = Depends(get_context)
 ) -> VaultFileWriteResponse:
@@ -442,6 +456,10 @@ async def post_vault_rename(
         raise HTTPException(status_code=404, detail="Datei nicht gefunden")
     _, meta = parse_frontmatter(old_content)
     node_id = meta.get("id")
+    if not node_id:
+        # Die ID wird sonst aus dem Pfad abgeleitet und würde sich beim Umbenennen ändern.
+        node_id, _ = vault_index._ensure_id(root / body.source, root, old_content)
+        vault_fs.write_file(root, body.source, vault_index.pin_id(old_content, node_id), None)
     try:
         vault_fs.rename(root, body.source, body.target)
     except VaultPathError as exc:
@@ -454,7 +472,7 @@ async def post_vault_rename(
     return VaultFileWriteResponse(path=body.target, content_hash=digest, indexed=True)
 
 
-@app.delete("/vault/file", response_model=DeleteResponse)
+@app.delete("/vault/file", response_model=DeleteResponse, dependencies=[Depends(require_writable)])
 async def delete_vault_file(
     path: str = Query(...), ctx: AppContext = Depends(get_context)
 ) -> DeleteResponse:
@@ -465,8 +483,7 @@ async def delete_vault_file(
         raise HTTPException(status_code=400, detail=str(exc))
     except FileNotFoundError:
         raise HTTPException(status_code=404, detail="Datei nicht gefunden")
-    _, meta = parse_frontmatter(content)
-    node_id = meta.get("id")
+    node_id, _ = vault_index._ensure_id(root / path, root, content)
     vault_fs.delete(root, path)
     removed_event_id: Optional[int] = None
     if node_id:
@@ -483,7 +500,7 @@ async def delete_vault_file(
     return DeleteResponse(deleted_node_id=node_id or "", removed_event_id=removed_event_id)
 
 
-@app.post("/vault/attachment", response_model=VaultAttachmentResponse)
+@app.post("/vault/attachment", response_model=VaultAttachmentResponse, dependencies=[Depends(require_writable)])
 async def post_vault_attachment(
     file: UploadFile = File(...), ctx: AppContext = Depends(get_context)
 ) -> VaultAttachmentResponse:
@@ -516,10 +533,7 @@ async def get_vault_backlinks(
         raise HTTPException(status_code=400, detail=str(exc))
     except FileNotFoundError:
         raise HTTPException(status_code=404, detail="Datei nicht gefunden")
-    _, meta = parse_frontmatter(content)
-    node_id = meta.get("id")
-    if not node_id:
-        return VaultBacklinksResponse(backlinks=[])
+    node_id, _ = vault_index._ensure_id(root / path, root, content)
     edges = ctx.graph.get_incoming_edges(node_id, relation_type="links_to")
     nodes = [ctx.graph.get_node(e.source) for e in edges]
     return VaultBacklinksResponse(backlinks=[n for n in nodes if n is not None])

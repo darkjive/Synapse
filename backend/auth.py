@@ -4,6 +4,7 @@ from typing import Optional
 from fastapi import Header, HTTPException, status
 
 from backend.config import Config
+from backend.runtime_settings import is_read_only
 
 
 def require_api_key(x_api_key: Optional[str] = Header(default=None)) -> None:
@@ -15,4 +16,12 @@ def require_api_key(x_api_key: Optional[str] = Header(default=None)) -> None:
     if not x_api_key or not secrets.compare_digest(x_api_key, config.api_key):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, detail="Ungültiger oder fehlender API-Key"
+        )
+
+
+def require_writable() -> None:
+    if is_read_only(Config.from_env()):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Nur-Lesen-Modus aktiv - in den Einstellungen deaktivieren",
         )

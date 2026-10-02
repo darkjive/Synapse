@@ -22,6 +22,7 @@ class Config:
     api_key: Optional[str]
     vault_path: Optional[str]
     vault_dir: Optional[Path]
+    read_only: bool = True
 
     @classmethod
     def from_env(cls) -> "Config":
@@ -45,4 +46,6 @@ class Config:
             vault_dir=(
                 Path(os.environ["CBKS_VAULT_DIR"]) if os.environ.get("CBKS_VAULT_DIR") else None
             ),
+            read_only=os.environ.get("CBKS_READ_ONLY", "1").strip().lower()
+            not in ("0", "false", "no", "off"),
         )

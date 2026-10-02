@@ -201,3 +201,7 @@ class VaultBacklinksResponse(BaseModel):
 
 class VaultSearchHitResponse(BaseModel):
     node: Node
+
+
+class SettingsModel(BaseModel):
+    read_only: bool

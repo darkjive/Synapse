@@ -61,7 +61,7 @@ def test_iter_vault_notes_finds_markdown_and_skips_attachments(tmp_path):
     assert names == {"notiz.md"}
 
 
-def test_index_file_assigns_id_to_file_without_frontmatter(tmp_path):
+def test_index_file_derives_id_without_modifying_file(tmp_path):
     vault = tmp_path / "vault"
     vault.mkdir()
     note = vault / "notiz.md"
@@ -71,8 +71,7 @@ def test_index_file_assigns_id_to_file_without_frontmatter(tmp_path):
     import asyncio
     asyncio.run(index_file(note, vault, ctx))
 
-    content = note.read_text()
-    assert content.startswith("---\nid: ")
+    assert note.read_text() == "Ein Text über FAISS"
     nodes = ctx.graph.get_all_nodes()
     assert len(nodes) == 1
     assert nodes[0].metadata["source_path"] == "notiz.md"
