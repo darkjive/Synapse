@@ -1,6 +1,6 @@
-# CBKS Frontend
+# Synapse Frontend
 
-React-SPA für [CBKS](../README.md) — 3D-Ansicht des Wissensgraphen, Vault-Browser,
+React-SPA für [Synapse](../README.md) — 3D-Ansicht des Wissensgraphen, Vault-Browser,
 Analyse-Panels und Vorlesefunktion.
 
 Stack: React 19 · TypeScript · Vite · [React Three Fiber](https://r3f.docs.pmnd.rs/)

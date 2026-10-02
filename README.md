@@ -12,15 +12,15 @@ Python (FastAPI + Typer) · React/TS + Vite · SQLite + FAISS · Ollama (lokal) 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 
-<img src="./docs/screenshot-overview.png" alt="CBKS — Gehirn-Übersicht: kompletter Graph mit allen Knoten, Filter-, Aktions- und Event-Log-Panel" width="600" />
+<img src="./docs/screenshot-overview.png" alt="Synapse — Gehirn-Übersicht: kompletter Graph mit allen Knoten, Filter-, Aktions- und Event-Log-Panel" width="600" />
 
-<img src="./docs/screenshot-radar-focus.png" alt="CBKS — aktivierter Knoten mit Radar-Ping-Effekt und Ego-Netzwerk-Fokus" width="600" />
+<img src="./docs/screenshot-radar-focus.png" alt="Synapse — aktivierter Knoten mit Radar-Ping-Effekt und Ego-Netzwerk-Fokus" width="600" />
 
 </div>
 
 ---
 
-CBKS speichert Notizen, Dokumente und Vault-Inhalte nicht als statische Dateien,
+Synapse speichert Notizen, Dokumente und Vault-Inhalte nicht als statische Dateien,
 sondern als **Knoten in einem Graphen** — mit Aktivierung, Vertrauen, emotionaler
 Gewichtung und zeitlichem Verfall. Im Gegensatz zu klassischem RAG oder einem
 Wiki liegt der Fokus nicht nur auf Abruf, sondern auf **Meta-Erkenntnissen über
@@ -34,7 +34,7 @@ den real implementierten Stand).
 
 ## Kerninnovation
 
-> _„CBKS speichert nicht nur Wissen — es macht die Entwicklung des eigenen
+> _„Synapse speichert nicht nur Wissen — es macht die Entwicklung des eigenen
 > Denkens sichtbar."_
 
 Jeder Input wird zuerst unveränderlich im Event-Log protokolliert, dann
@@ -222,14 +222,14 @@ API-Key (Header, `CBKS_API_KEY`); leer/unset bedeutet offen.
 - Domänensprache ist bewusst Deutsch: CLI-Ausgaben, API-Fehlermeldungen und
   Tests erwarten deutsche Strings.
 
-> **Hinweis:** CBKS ist als Single-User-System für den eigenen Rechner gebaut.
+> **Hinweis:** Synapse ist als Single-User-System für den eigenen Rechner gebaut.
 > `CBKS_API_KEY` ist optional — leer oder ungesetzt bedeutet **offene API**. Wer
 > das Backend über `127.0.0.1` hinaus erreichbar macht, sollte vorher
 > [SECURITY.md](./SECURITY.md) lesen.
 
 ## Roadmap
 
-CBKS ist ein laufendes Experiment. Was als Nächstes ansteht:
+Synapse ist ein laufendes Experiment. Was als Nächstes ansteht:
 
 | Vorhaben | Warum |
 |---|---|

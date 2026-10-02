@@ -2,7 +2,7 @@
 
 ## Bedrohungsmodell
 
-CBKS ist ein **local-first Single-User-System**. Es ist ausdrücklich **nicht**
+Synapse ist ein **local-first Single-User-System**. Es ist ausdrücklich **nicht**
 dafür gebaut, im öffentlichen Internet oder als Multi-User-Dienst zu laufen.
 
 Die Standardkonfiguration geht davon aus:
@@ -15,7 +15,7 @@ Die Standardkonfiguration geht davon aus:
 
 ## Wenn du davon abweichst
 
-Sobald CBKS über `127.0.0.1` hinaus erreichbar wird, gelten diese Punkte:
+Sobald Synapse über `127.0.0.1` hinaus erreichbar wird, gelten diese Punkte:
 
 | Thema | Status |
 |---|---|
@@ -33,7 +33,7 @@ Ein Bericht ist willkommen bei:
 - Path-Traversal oder Schreibzugriff außerhalb des Vault-Roots
 - Umgehung der API-Key-Prüfung bei gesetztem `CBKS_API_KEY`
 - SQL-Injection, Deserialisierungs- oder RCE-Pfade
-- Preisgabe von Daten an externe Dienste (CBKS soll keine machen)
+- Preisgabe von Daten an externe Dienste (Synapse soll keine machen)
 
 Kein gültiger Bericht: „Die API ist ohne `CBKS_API_KEY` offen." Das ist der
 dokumentierte Standard für den local-first Betrieb.
