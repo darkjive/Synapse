@@ -65,7 +65,7 @@ export function AskPanel() {
       <div className="chat-thread" ref={scrollRef}>
         {turns.length === 0 && !loading && (
           <div className="chat-empty">
-            <p>Stell CBKS eine Frage zu deinem Wissensgraphen, zum Beispiel:</p>
+            <p>Stell Synapse eine Frage zu deinem Wissensgraphen, zum Beispiel:</p>
             <div className="chat-suggestions">
               {[
                 "Was sind meine wiederkehrenden Themen?",
@@ -85,7 +85,7 @@ export function AskPanel() {
               {turn.role === "user" ? "Du" : <BrainLogo size={14} />}
             </div>
             <div className="chat-msg-body">
-              <span className="chat-msg-role">{turn.role === "user" ? "Du" : "CBKS"}</span>
+              <span className="chat-msg-role">{turn.role === "user" ? "Du" : "Synapse"}</span>
               <p className="chat-msg-content">{turn.content}</p>
               {turn.role === "assistant" && i === turns.length - 1 && lastSources.length > 0 && (
                 <ul className="chat-sources">
@@ -105,7 +105,7 @@ export function AskPanel() {
               <BrainLogo size={14} />
             </div>
             <div className="chat-msg-body">
-              <span className="chat-msg-role">CBKS</span>
+              <span className="chat-msg-role">Synapse</span>
               <p className="chat-msg-content chat-msg-loading">denkt nach…</p>
             </div>
           </div>
@@ -117,7 +117,7 @@ export function AskPanel() {
           value={question}
           onChange={(e) => setQuestion(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && ask()}
-          placeholder="Frage an CBKS stellen..."
+          placeholder="Frage an Synapse stellen..."
           disabled={loading}
         />
         <button className="chat-send" onClick={() => ask()} disabled={loading || !question.trim()}>

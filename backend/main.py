@@ -86,7 +86,7 @@ async def lifespan(app: FastAPI):
     ctx.conn.close()
 
 
-app = FastAPI(title="CBKS API", dependencies=[Depends(require_api_key)], lifespan=lifespan)
+app = FastAPI(title="Synapse API", dependencies=[Depends(require_api_key)], lifespan=lifespan)
 
 
 @app.middleware("http")

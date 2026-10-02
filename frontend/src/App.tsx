@@ -11,7 +11,6 @@ import { StatsBar } from "./components/StatsBar";
 import { EventLogPanel } from "./components/EventLogPanel";
 import { AnalysisPanel } from "./components/AnalysisPanel";
 import {
-  BrainLogo,
   ColumnsIcon,
   UploadIcon,
   SearchIcon,
@@ -192,11 +191,11 @@ function Dashboard() {
       <aside className={`app-sidebar ${sidebarCollapsed ? "collapsed" : ""}`}>
         <div className="sidebar-head">
           <div className="brand">
-            <BrainLogo size={40} />
+            <img src="/logo.svg" width={40} height={40} alt="" />
             {!sidebarCollapsed && (
               <div className="brand-text">
-                <h1>CBKS</h1>
-                <span className="brand-sub">Cognitive Brain Knowledge System</span>
+                <h1>Synapse</h1>
+                <span className="brand-sub">Wissensnervensystem</span>
               </div>
             )}
           </div>
