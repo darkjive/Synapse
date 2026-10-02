@@ -10,7 +10,7 @@ Stack: React 19 · TypeScript · Vite · [React Three Fiber](https://r3f.docs.pm
 
 ```bash
 npm install
-npm run dev      # http://localhost:5173
+npm run dev      # http://localhost:5182
 ```
 
 Der Dev-Server proxyt alle API-Pfade auf das Backend unter `127.0.0.1:8000`

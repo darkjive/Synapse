@@ -108,7 +108,7 @@ make setup
 .venv/bin/uvicorn backend.main:app --host 127.0.0.1 --port 8000
 
 # 3b. … und in einem zweiten Terminal das Frontend
-cd frontend && npm run dev     # http://localhost:5173, Proxy auf Backend :8000
+cd frontend && npm run dev     # http://localhost:5182, Proxy auf Backend :8000
 ```
 
 Alternativ ganz ohne Frontend über die CLI:

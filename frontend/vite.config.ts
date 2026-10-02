@@ -10,6 +10,8 @@ const API_PATHS = [
 export default defineConfig({
   plugins: [react()],
   server: {
+    port: 5182,
+    strictPort: true,
     proxy: Object.fromEntries(
       API_PATHS.map((path) => [path, "http://127.0.0.1:8000"])
     ),
