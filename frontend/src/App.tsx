@@ -332,6 +332,9 @@ function Dashboard() {
 
       <main className="app-main">
         <div className="main-toolbar">
+          {apiKey === null && (
+            <span className="connection-status badge badge-warn">API-Key fehlt</span>
+          )}
           <button
             className={`toolbar-tab ${view === "graph" ? "active" : ""}`}
             onClick={() => setView("graph")}
@@ -378,10 +381,6 @@ function Dashboard() {
         onPlayAudio={() => selectedNode && playNode(selectedNode.node.id)}
         onStopAudio={stopAudio}
       />
-
-      {apiKey === null && (
-        <span className="connection-status badge badge-warn">API-Key fehlt</span>
-      )}
     </div>
   );
 }

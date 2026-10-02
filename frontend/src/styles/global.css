@@ -78,10 +78,8 @@ body {
 }
 
 .connection-status {
-  position: fixed;
-  bottom: 1rem;
-  right: 1rem;
-  z-index: 5;
+  align-self: center;
+  margin-right: 0.5rem;
 }
 
 .app-sidebar {
