@@ -1,6 +1,6 @@
 {
-  "name": "CBKS",
-  "short_name": "CBKS",
+  "name": "Synapse",
+  "short_name": "Synapse",
   "description": "Concept-based Knowledge System: Notizen und Dokumente in einem verlinkten Wissensgraphen.",
   "start_url": "/",
   "scope": "/",
