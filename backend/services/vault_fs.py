@@ -6,7 +6,9 @@ from typing import Optional
 from backend.services.hashing import content_hash
 
 # Build/tooling dirs of a vault that is also an app (e.g. Astro), not notes.
-_TREE_EXCLUDED_DIRS = {"node_modules", "dist", "build", "src"}
+_TREE_EXCLUDED_DIRS = {
+    "node_modules", "dist", "build", "src", "electron-app", "public", "scripts", "systemd", "logs",
+}
 
 
 class VaultPathError(Exception):

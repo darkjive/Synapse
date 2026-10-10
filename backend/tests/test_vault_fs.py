@@ -161,7 +161,7 @@ def test_list_tree_skips_hidden_entries(tmp_path):
 
 
 def test_list_tree_skips_build_dirs(tmp_path):
-    for name in ("node_modules", "dist", "build", "src"):
+    for name in ("node_modules", "dist", "build", "src", "electron-app", "public", "scripts", "systemd", "logs"):
         (tmp_path / name).mkdir()
     (tmp_path / "entity").mkdir()
     (tmp_path / "src.md").write_text("x")
