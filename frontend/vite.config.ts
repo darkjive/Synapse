@@ -12,6 +12,8 @@ export default defineConfig({
   server: {
     port: 5182,
     strictPort: true,
+    // Reached from the phone via `tailscale serve` (tailnet-only HTTPS).
+    allowedHosts: [".ts.net"],
     proxy: Object.fromEntries(
       API_PATHS.map((path) => [path, "http://127.0.0.1:8000"])
     ),
