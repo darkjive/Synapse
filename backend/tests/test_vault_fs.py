@@ -158,3 +158,15 @@ def test_list_tree_skips_hidden_entries(tmp_path):
 
     names = {entry.name for entry in tree}
     assert names == {"sichtbar.md"}
+
+
+def test_list_tree_skips_build_dirs(tmp_path):
+    for name in ("node_modules", "dist", "build", "src"):
+        (tmp_path / name).mkdir()
+    (tmp_path / "entity").mkdir()
+    (tmp_path / "src.md").write_text("x")
+
+    tree = list_tree(tmp_path)
+
+    names = {entry.name for entry in tree}
+    assert names == {"entity", "src.md"}

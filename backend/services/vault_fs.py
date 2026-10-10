@@ -5,6 +5,9 @@ from typing import Optional
 
 from backend.services.hashing import content_hash
 
+# Build/tooling dirs of a vault that is also an app (e.g. Astro), not notes.
+_TREE_EXCLUDED_DIRS = {"node_modules", "dist", "build", "src"}
+
 
 class VaultPathError(Exception):
     pass
@@ -38,6 +41,8 @@ def list_tree(root: Path) -> list[TreeEntry]:
                 continue
             rel = item.relative_to(root).as_posix()
             if item.is_dir():
+                if item.name in _TREE_EXCLUDED_DIRS:
+                    continue
                 entries.append(TreeEntry(name=item.name, path=rel, is_dir=True, children=_walk(item)))
             else:
                 entries.append(TreeEntry(name=item.name, path=rel, is_dir=False))
