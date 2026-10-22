@@ -10,6 +10,8 @@ Python (FastAPI + Typer) · React/TS + Vite · SQLite + FAISS · Ollama (lokal) 
 
 [![CI](https://github.com/darkjive/Synapse/actions/workflows/ci.yml/badge.svg)](https://github.com/darkjive/Synapse/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
+
+**Status: archiviert.** Abgeschlossenes Referenzprojekt, wird nicht weiterentwickelt. Forken und selbst betreiben ist ausdrücklich erwünscht (siehe Schnellstart).
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 
 <img src="./docs/screenshot-overview.png" alt="Synapse — Gehirn-Übersicht: kompletter Graph mit allen Knoten, Filter-, Aktions- und Event-Log-Panel" width="600" />
@@ -246,8 +248,9 @@ Details und Designüberlegungen in Abschnitt 9 von
 
 ## Mitwirken
 
-Issues und Pull Requests sind willkommen. Vor einem PR bitte `make check`
-laufen lassen — dieselben Prüfungen laufen in der CI. Commit-Stil: Conventional
+Das Repository ist archiviert und nimmt keine Issues oder Pull Requests mehr an.
+Wer daran weiterbauen will, forkt es; `make check` führt dieselben Prüfungen aus
+wie die CI. Commit-Stil: Conventional
 Commits (`feat:`, `fix:`, `perf:`, `docs:`, `chore:`). Die Domänensprache ist
 Deutsch: CLI-Ausgaben, API-Fehlermeldungen und Test-Assertions erwarten
 deutsche Strings.
